@@ -105,3 +105,6 @@ El sistema de ventas de comida permite gestionar la información de clientes, pr
 - dia2
 ## Esquema 
 ![Modelo ER](esquema.drawio.png)
+
+## Avance 
+- dia 3
