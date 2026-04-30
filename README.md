@@ -66,6 +66,15 @@ El sistema de ventas de comida es una aplicación diseñada para gestionar de ma
 - cantidad 
 - subtotal
 
+### Vendedor
+- Id_Vendedor
+- Nombre
+- Apellido
+- Telefono
+- Direccion
+- Sexo
+- Id_Jefe
+
 ### Pago
 - id_pago
 - id_pedido
@@ -84,7 +93,7 @@ El sistema de ventas de comida es una aplicación diseñada para gestionar de ma
 -Dia 1
 
 ## Modelo entidad-relacion
-![Modelo ER](Diagrama_sistema_venta.drawio.png)
+![Modelo ER](Diagrama_sistema_venta_m.drawio.png)
 
 ----------
 
@@ -92,6 +101,7 @@ El sistema de ventas de comida es una aplicación diseñada para gestionar de ma
 El sistema de ventas de comida permite gestionar la información de clientes, productos, pedidos, pagos y vendedores.Un cliente puede realizar varios pedidos, y cada pedido es registrado por un vendedor. Cada pedido contiene uno o varios productos, los cuales se gestionan mediante la entidad DetallePedido, permitiendo especificar la cantidad y el subtotal de cada producto.Los productos pueden formar parte de múltiples pedidos, por lo que existe una relación muchos a muchos entre pedido y producto, resuelta mediante la entidad DetallePedido.Cada pedido genera un pago asociado, el cual incluye el método de pago y el monto correspondiente.El sistema permite controlar el stock de productos, calcular el total de cada pedido y mantener un registro de las transacciones realizadas.
 
 -------------
-
 ## Avance
 - dia2
+## Esquema 
+![Modelo ER](esquema.drawio.png)
