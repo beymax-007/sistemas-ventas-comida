@@ -93,7 +93,7 @@ El sistema de ventas de comida es una aplicación diseñada para gestionar de ma
 -Dia 1
 
 ## Modelo entidad-relacion
-![Modelo ER](Diagrama_sistema_venta_m.drawio.png)
+![Modelo ER](Diagrama_sistema_ventas_m.drawio.png)
 
 ----------
 
