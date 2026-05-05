@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodZone Bolivia — Mis Pedidos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fire:#FF3D00;--ember:#FF6D00;--gold:#FFB300;
+    --dark:#0D0D0D;--dark2:#161616;--dark3:#1F1F1F;
+    --card:#242424;--text:#F5F5F5;--muted:#888;--white:#FFF;
+    --green:#00C853;--blue:#2979FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Outfit',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+
+  nav {
+    position:sticky;top:0;z-index:100;background:rgba(13,13,13,0.95);
+    backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);
+    padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:70px;
+  }
+  .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+  .nav-brand span{font-size:32px;filter:drop-shadow(0 0 10px rgba(255,109,0,0.7));}
+  .nav-brand h1{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;background:linear-gradient(135deg,var(--fire),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;gap:6px;}
+  .nav-link{padding:8px 18px;border-radius:10px;color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;transition:all 0.2s;border:none;background:transparent;cursor:pointer;font-family:'Outfit',sans-serif;}
+  .nav-link:hover,.nav-link.active{color:var(--text);background:var(--dark3);}
+
+  .page-header{
+    padding:50px 40px 30px;
+    background:linear-gradient(135deg,#0D0D0D 0%,#1a0800 60%,#0D0D0D 100%);
+  }
+  .page-header h2{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:2px;line-height:1;margin-bottom:12px;}
+  .page-header h2 span{color:var(--fire);}
+  .page-header p{color:var(--muted);font-size:16px;}
+
+  .content{padding:30px 40px 60px;max-width:900px;}
+
+  /* ORDER CARDS */
+  .order-card{
+    background:var(--card);border:1px solid rgba(255,255,255,0.06);
+    border-radius:20px;overflow:hidden;margin-bottom:20px;
+    transition:all 0.3s;
+  }
+  .order-card:hover{border-color:rgba(255,61,0,0.2);transform:translateY(-2px);}
+  .order-card-head{
+    padding:20px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    cursor:pointer;
+  }
+  .order-meta{display:flex;align-items:center;gap:20px;}
+  .order-id{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--fire);}
+  .order-date{color:var(--muted);font-size:13px;}
+  .order-total{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);}
+  .badge{display:inline-flex;align-items:center;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;}
+  .badge-green{background:rgba(0,200,83,0.15);color:var(--green);}
+  .badge-gold{background:rgba(255,179,0,0.15);color:var(--gold);}
+  .badge-blue{background:rgba(41,121,255,0.15);color:var(--blue);}
+  .badge-orange{background:rgba(255,61,0,0.15);color:var(--fire);}
+
+  .order-card-body{padding:20px 24px;display:none;}
+  .order-card-body.open{display:block;}
+
+  /* PROGRESS */
+  .progress-track{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:28px;position:relative;
+  }
+  .progress-track::before{
+    content:'';position:absolute;top:20px;left:40px;right:40px;height:2px;
+    background:rgba(255,255,255,0.08);z-index:0;
+  }
+  .progress-fill{
+    position:absolute;top:20px;left:40px;height:2px;
+    background:linear-gradient(90deg,var(--fire),var(--gold));
+    transition:width 1s ease;z-index:1;
+  }
+  .step{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:2;}
+  .step-circle{
+    width:40px;height:40px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+    background:var(--dark3);border:2px solid rgba(255,255,255,0.1);
+    transition:all 0.5s;
+  }
+  .step.done .step-circle{background:linear-gradient(135deg,var(--fire),var(--ember));border-color:var(--fire);box-shadow:0 0 15px rgba(255,61,0,0.4);}
+  .step.active .step-circle{background:var(--dark3);border-color:var(--gold);box-shadow:0 0 15px rgba(255,179,0,0.3);animation:pulse2 1.5s infinite;}
+  @keyframes pulse2{0%,100%{box-shadow:0 0 15px rgba(255,179,0,0.3)}50%{box-shadow:0 0 25px rgba(255,179,0,0.6)}}
+  .step-label{font-size:12px;color:var(--muted);font-weight:600;text-align:center;max-width:70px;}
+  .step.done .step-label,.step.active .step-label{color:var(--text);}
+
+  .order-items-list{display:flex;flex-direction:column;gap:10px;}
+  .order-item{
+    display:flex;align-items:center;gap:14px;
+    background:var(--dark3);border-radius:12px;padding:12px 16px;
+  }
+  .order-item-emoji{font-size:28px;}
+  .order-item-info{flex:1;}
+  .order-item-info strong{font-size:14px;display:block;}
+  .order-item-info small{color:var(--muted);font-size:12px;}
+  .order-item-price{font-weight:700;color:var(--gold);}
+
+  .order-summary-row{
+    display:flex;justify-content:space-between;padding:6px 0;
+    font-size:14px;color:var(--muted);
+    border-top:1px solid rgba(255,255,255,0.06);margin-top:16px;padding-top:16px;
+  }
+  .order-summary-row.total{color:var(--text);font-weight:700;font-size:18px;}
+  .order-summary-row.total span:last-child{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);}
+
+  .btn-reorder{
+    margin-top:16px;padding:12px 24px;
+    background:linear-gradient(135deg,var(--fire),var(--ember));
+    border:none;border-radius:12px;color:white;
+    font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;
+    cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(255,61,0,0.3);
+  }
+  .btn-reorder:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,61,0,0.5);}
+
+  .empty-state{
+    text-align:center;padding:80px 20px;color:var(--muted);
+  }
+  .empty-state span{font-size:80px;display:block;margin-bottom:20px;opacity:0.4;}
+  .empty-state h3{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:12px;color:var(--text);}
+  .empty-state a{color:var(--fire);font-weight:600;text-decoration:none;}
+
+  .toast{position:fixed;bottom:30px;right:30px;background:var(--card);border:1px solid var(--fire);border-radius:14px;padding:14px 22px;color:var(--text);font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,0.4);transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);z-index:999;display:flex;align-items:center;gap:10px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="login.html" class="nav-brand"><span>🔥</span><h1>Zona de Comida</h1></a>
+  <div class="nav-links">
+    <button class="nav-link" onclick="location.href='menu.html'">🍽️ Menú</button>
+    <button class="nav-link active">📦 Mis Pedidos</button>
+    <button class="nav-link" onclick="location.href='clientes.html'">👤 Mi Perfil</button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h2>MIS <span>PEDIDOS</span></h2>
+  <p>Historial y seguimiento de todos tus pedidos</p>
+</div>
+
+<div class="content">
+
+  <!-- PEDIDO 1 - EN CAMINO -->
+  <div class="order-card">
+    <div class="order-card-head" onclick="toggleOrder(this)">
+      <div class="order-meta">
+        <div class="order-id">#P-003</div>
+        <div>
+          <div style="font-weight:600">2 Hamburguesas + Lasaña + 3 Bebidas</div>
+          <div class="order-date">📅 04 Mayo 2026 · 14:55</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <span class="badge badge-blue">🚴 En camino</span>
+        <div class="order-total">Bs. 220</div>
+        <span style="color:var(--muted);font-size:20px">▾</span>
+      </div>
+    </div>
+    <div class="order-card-body open">
+      <div class="progress-track">
+        <div class="progress-fill" style="width:calc(75% - 80px)"></div>
+        <div class="step done"><div class="step-circle">✅</div><div class="step-label">Recibido</div></div>
+        <div class="step done"><div class="step-circle">👨‍🍳</div><div class="step-label">Preparando</div></div>
+        <div class="step active"><div class="step-circle">🚴</div><div class="step-label">En camino</div></div>
+        <div class="step"><div class="step-circle">🏠</div><div class="step-label">Entregado</div></div>
+      </div>
+      <div class="order-items-list">
+        <div class="order-item"><span class="order-item-emoji">🍔</span><div class="order-item-info"><strong>Hamburguesa Doble BBQ</strong><small>x2 unidades</small></div><span class="order-item-price">Bs. 104</span></div>
+        <div class="order-item"><span class="order-item-emoji">🍝</span><div class="order-item-info"><strong>Lasaña Boloñesa Clásica</strong><small>x1 unidad</small></div><span class="order-item-price">Bs. 55</span></div>
+        <div class="order-item"><span class="order-item-emoji">🥤</span><div class="order-item-info"><strong>Coca-Cola 2L</strong><small>x3 unidades</small></div><span class="order-item-price">Bs. 45</span></div>
+      </div>
+      <div class="order-summary-row">Subtotal<span>Bs. 204</span></div>
+      <div class="order-summary-row">Envío<span>Bs. 10</span></div>
+      <div class="order-summary-row total">TOTAL<span>Bs. 220</span></div>
+      <button class="btn-reorder" onclick="reorder()">🔁 REPETIR PEDIDO</button>
+    </div>
+  </div>
+
+  <!-- PEDIDO 2 - ENTREGADO -->
+  <div class="order-card">
+    <div class="order-card-head" onclick="toggleOrder(this)">
+      <div class="order-meta">
+        <div class="order-id">#P-001</div>
+        <div>
+          <div style="font-weight:600">Pollo Brasa + Salchipapas x2</div>
+          <div class="order-date">📅 03 Mayo 2026 · 19:10</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <span class="badge badge-green">✅ Entregado</span>
+        <div class="order-total">Bs. 137</div>
+        <span style="color:var(--muted);font-size:20px">▾</span>
+      </div>
+    </div>
+    <div class="order-card-body">
+      <div class="progress-track">
+        <div class="progress-fill" style="width:calc(100% - 80px)"></div>
+        <div class="step done"><div class="step-circle">✅</div><div class="step-label">Recibido</div></div>
+        <div class="step done"><div class="step-circle">👨‍🍳</div><div class="step-label">Preparando</div></div>
+        <div class="step done"><div class="step-circle">🚴</div><div class="step-label">En camino</div></div>
+        <div class="step done"><div class="step-circle">🏠</div><div class="step-label">Entregado</div></div>
+      </div>
+      <div class="order-items-list">
+        <div class="order-item"><span class="order-item-emoji">🍗</span><div class="order-item-info"><strong>Pollo a la Brasa Entero</strong><small>x1 unidad</small></div><span class="order-item-price">Bs. 85</span></div>
+        <div class="order-item"><span class="order-item-emoji">🍟</span><div class="order-item-info"><strong>Salchipapas Especial</strong><small>x2 unidades</small></div><span class="order-item-price">Bs. 50</span></div>
+      </div>
+      <div class="order-summary-row">Subtotal<span>Bs. 135</span></div>
+      <div class="order-summary-row">Envío<span>Bs. 10</span></div>
+      <div class="order-summary-row total">TOTAL<span>Bs. 145</span></div>
+      <button class="btn-reorder" onclick="reorder()">🔁 REPETIR PEDIDO</button>
+    </div>
+  </div>
+
+  <!-- PEDIDO 3 - ENTREGADO -->
+  <div class="order-card">
+    <div class="order-card-head" onclick="toggleOrder(this)">
+      <div class="order-meta">
+        <div class="order-id">#P-000</div>
+        <div>
+          <div style="font-weight:600">Milanesa de Res + Bebida</div>
+          <div class="order-date">📅 01 Mayo 2026 · 13:30</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <span class="badge badge-green">✅ Entregado</span>
+        <div class="order-total">Bs. 63</div>
+        <span style="color:var(--muted);font-size:20px">▾</span>
+      </div>
+    </div>
+    <div class="order-card-body">
+      <div class="progress-track">
+        <div class="progress-fill" style="width:calc(100% - 80px)"></div>
+        <div class="step done"><div class="step-circle">✅</div><div class="step-label">Recibido</div></div>
+        <div class="step done"><div class="step-circle">👨‍🍳</div><div class="step-label">Preparando</div></div>
+        <div class="step done"><div class="step-circle">🚴</div><div class="step-label">En camino</div></div>
+        <div class="step done"><div class="step-circle">🏠</div><div class="step-label">Entregado</div></div>
+      </div>
+      <div class="order-items-list">
+        <div class="order-item"><span class="order-item-emoji">🥩</span><div class="order-item-info"><strong>Milanesa de Res</strong><small>x1 unidad</small></div><span class="order-item-price">Bs. 48</span></div>
+        <div class="order-item"><span class="order-item-emoji">🥤</span><div class="order-item-info"><strong>Coca-Cola 2L</strong><small>x1 unidad</small></div><span class="order-item-price">Bs. 15</span></div>
+      </div>
+      <div class="order-summary-row">Subtotal<span>Bs. 63</span></div>
+      <div class="order-summary-row">Envío<span>Bs. 10</span></div>
+      <div class="order-summary-row total">TOTAL<span>Bs. 73</span></div>
+      <button class="btn-reorder" onclick="reorder()">🔁 REPETIR PEDIDO</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">🔥 <span id="toastMsg"></span></div>
+
+<script>
+function toggleOrder(head) {
+  const body = head.nextElementSibling;
+  body.classList.toggle('open');
+  const arrow = head.querySelector('span:last-child');
+  if(arrow) arrow.textContent = body.classList.contains('open') ? '▴' : '▾';
+}
+function reorder() {
+  showToast('🛒 Productos agregados al carrito!');
+  setTimeout(()=>location.href='menu.html',1500);
+}
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
